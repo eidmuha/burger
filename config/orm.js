@@ -1,19 +1,18 @@
+// import the the connection
 var connection = require("../config/connection");
 
+// helper function to print question mark
 function printQuestionMarks(num) {
   var arr = [];
-
   for (var i = 0; i < num; i++) {
     arr.push("?");
   }
-
   return arr.toString();
 }
 
 // Helper function to convert object key/value pairs to SQL syntax
 function objToSql(ob) {
-    var arr = [];
-  
+    var arr = [];  
     // loop through the keys and push the key/value as a string int arr
     for (var key in ob) {
       var value = ob[key];
@@ -33,6 +32,7 @@ function objToSql(ob) {
     return arr.toString();
   }
 
+  // creating the orm
 var orm = {
   selectAll: function(tableInput, cb) {
     var queryString = "SELECT * FROM " + tableInput + ";";
@@ -46,42 +46,30 @@ var orm = {
 
   insertOne: function(table, cols, vals, cb) {
     var queryString = "INSERT INTO " + table;
-    console.log("valuses: " + vals)
     queryString += " (";
     queryString += cols.toString();
     queryString += ") ";
     queryString += "VALUES (";
     queryString += printQuestionMarks(vals.length);
     queryString += ") ";
-
-    console.log(queryString);
-
     connection.query(queryString, vals, function(err, result) {
       if (err) {
         throw err;
       }
-
       cb(result);
     });
   },
 
   updateOne: function(table, objColVals, condition, cb) {
-
-    console.log("col: ", objColVals)
-    console.log("Con: "+condition)
     var queryString = "UPDATE " + table;
-
     queryString += " SET ";
     queryString += objToSql(objColVals);
     queryString += " WHERE ";
     queryString += condition;
-
-    console.log(queryString);
     connection.query(queryString, function(err, result) {
       if (err) {
         throw err;
       }
-        console.log(result.affectedRows + " affected")
       cb(result);
     });
   }
